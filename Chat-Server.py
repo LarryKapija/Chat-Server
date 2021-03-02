@@ -13,7 +13,7 @@ while True:
 		peticion = conexion.recv(1024)
 		peticion = str(peticion)
 		
-		if "Hola" in peticion :
+		if "hola" in peticion.lower() :
 			mensaje = "Hi"
 		elif "Como estas" in peticion:
 			mensaje = "Bien y tu?"
