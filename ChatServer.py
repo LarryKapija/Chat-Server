@@ -8,8 +8,6 @@ my_socket.bind(('localhost',5000))
 my_socket.listen(16)
 
 
-# users["username"] = address 
-
 def switch(argument):
 	switcher = {
 		"/ID": cmd.Id,
@@ -25,7 +23,7 @@ while True:
 	try:
 		connection, address = my_socket.accept()
 		print("New connection established!",end=" ")
-		print(address)
+		print(address, end=" ")
 
 		log.info(f"New connection established!{address}")
 		petition = connection.recv(4096)
@@ -33,8 +31,8 @@ while True:
 		petition = petition.split(" ")
 
 		function = switch(petition[0])
-		message = function(petition[1:], address)
-		
+		message = function(petition[1:], connection)
+  
 		connection.send(message.encode("ascii"))
 		connection.close()
 
