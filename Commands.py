@@ -17,11 +17,13 @@ def id(username, connection):
 
 	else:
 		users[username] = connection
-        # broadcast(f"{username} joined!")
-        #connection.send()
-        #print(users)
+		broadcast(f"{username} joined the conversation!")
+		#connection.send()
+		#print(users)
 		return "Ok"
-
+def broadcast(message):
+	for value in users:
+		users[value].send(message.encode("ascii"))
 
 def userlist(a=None, b=None):
 	mylist = []
@@ -52,20 +54,17 @@ def chat(args, connection):
 		print(e)
 		return "ERROR"
 
-def broadcast(message):
-	for key,value in users:
-		value.send(message.encode("ascii"))
+
 
 def close(client,connection):
 	try:
 		for key in users.keys():
 			if users[key] == connection:
 				users.pop(key)
-
-		connection.close()
-		return "Ok"
-	except Exception :
-		return "Error"
-    
+				connection.close()
+				return "Ok"
+	except Exception as e:
+		return f"Error{e}"
+	
 def chatlist():
 	return "CHATLIST"

@@ -34,24 +34,31 @@ def main():
 			thread.start()
 
 		except Exception as e:
-			message = f"Hubo un error {e}"
+			message = f"ERROR {e}"
 			print(message)
 			connection.send(message.encode("ascii"))
 			connection.close()
-   
+
 
 def handle(connection):
-	while True:
-		try:
-			petition = connection.recv(4096)
-			petition = str(petition, encoding = "ascii")
-			petition = petition.split(" ")
 
-			function = switch(petition[0])
-			message = function(petition[1:], connection)
-			connection.send(message.encode("ascii"))
-		except:
-			connection.close()
-	
+	with connection:
+		client_message = ''
+		while True:
+			petition = connection.recv(1024)
+			if petition:
+				client_message += petition.decode('utf-8')
+				if petition.decode('utf-8') == '\r\n' or petition.decode('utf-8').endswith('\r\n'):
+					continue
+				else:
+					client_message = client_message.split(" ")
+					function = switch(client_message[0])
+     
+					server_message = function(client_message[1:],connection)
+					connection.send(server_message.encode('ascii'))
+     
+					client_message= ''
+					server_message= ''
+
 if __name__ == "__main__":
-    main()
+	main()
