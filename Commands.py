@@ -17,7 +17,7 @@ def id(username, connection):
 
     else:
         users[username] = connection
-        broadcast(f"{username} joined!")
+        # broadcast(f"{username} joined!")
         #connection.send()
         #print(users)
         return "Ok"
