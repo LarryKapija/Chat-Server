@@ -1,7 +1,7 @@
 import socket as sk 
 
 mi_socket = sk.socket()
-mi_socket.connect(('localhost', 5000))
+mi_socket.connect(('localhost', 6000))
 
 while True:
     try:

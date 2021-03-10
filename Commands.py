@@ -7,20 +7,20 @@ def id(username, connection):
     username = str(''.join(username))
 
     if len(users) == 16:
-        return "FULL"
+        return "Full"
 
     elif sc.pascalcase(username) != username:
-        return "INVALID NAME"
+        return "NotValid"
 
     elif username in users:
-        return "TAKEN"
+        return "Taken"
 
     else:
         users[username] = connection
-        bradcast(f"{username} joined!")
+        broadcast(f"{username} joined!")
         #connection.send()
         #print(users)
-        return "OK"
+        return "Ok"
 
 
 def userlist(a=None, b=None):
@@ -40,21 +40,21 @@ def chat(args, connection):
     try:
         if username in users:
             users[username].send(message)
-            return "OK"
+            return "Ok"
         else:
-            return "NOTFOUND"
+            return "NotFound"
             
     except Exception :
-        return "ERROR"
+        return "Error"
 
-def bradcast(message):
+def broadcast(message):
     for key,value in users:
         value.send(message.encode("ascii"))
         
 def close(client):
     username =""
     users.pop(username)
-    return "CLOSE"
+    return "Ok"
 
 
 def chatlist():
