@@ -3,7 +3,7 @@ import stringcase as sc
 users = {}
 
 
-def Id(username, connection):
+def id(username, connection):
     username = str(''.join(username))
 
     if len(users) == 16:
@@ -17,7 +17,9 @@ def Id(username, connection):
 
     else:
         users[username] = connection
-        print(users)
+        bradcast(f"{username} joined!")
+        #connection.send()
+        #print(users)
         return "OK"
 
 
@@ -45,8 +47,13 @@ def chat(args, connection):
     except Exception :
         return "ERROR"
 
-
-def close():
+def bradcast(message):
+    for key,value in users:
+        value.send(message.encode("ascii"))
+        
+def close(client):
+    username =""
+    users.pop(username)
     return "CLOSE"
 
 
