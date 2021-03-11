@@ -48,13 +48,21 @@ def handle(connection):
 			petition = connection.recv(1024)
 			if petition:
 				client_message += petition.decode('utf-8')
-				if petition.decode('utf-8') == '\r\n' or petition.decode('utf-8').endswith('\r\n'):
+				if petition.decode('utf-8') != '\r\n' or not petition.decode('utf-8').endswith('\r\n'):
 					continue
 				else:
+					client_message = client_message.replace("\r\n", "")
 					client_message = client_message.split(" ")
 					function = switch(client_message[0])
-     
+
+					if isinstance(function, str):
+						connection.send(function.encode("ascii"))
+						continue
+
 					server_message = function(client_message[1:],connection)
+					if connection._closed:
+						break
+					
 					connection.send(server_message.encode('ascii'))
      
 					client_message= ''

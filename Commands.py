@@ -17,7 +17,7 @@ def id(username, connection):
 
 	else:
 		users[username] = connection
-		broadcast(f"{username} joined the conversation!")
+		#broadcast(f"{username} joined the conversation!")
 		#connection.send()
 		#print(users)
 		return "Ok"
@@ -46,13 +46,13 @@ def chat(args, connection):
 			message = str(' '.join(args)).replace(username, key_list[position])
 			message = "/CHAT " + message
 			users[username].send(message.encode("ascii"))
-			return "OK"
+			return "Ok"
 		else:
-			return "NOTFOUND"
+			return "NotFound"
 
 	except Exception as e :
 		print(e)
-		return "ERROR"
+		return "Error"
 
 
 
@@ -61,8 +61,10 @@ def close(client,connection):
 		for key in users.keys():
 			if users[key] == connection:
 				users.pop(key)
+				connection.send('Ok'.encode('ascii'))
 				connection.close()
-				return "Ok"
+				break
+			
 	except Exception as e:
 		return f"Error{e}"
 	
