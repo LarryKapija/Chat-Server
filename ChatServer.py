@@ -41,17 +41,17 @@ def main():
 
 
 def handle(connection):
-
 	with connection:
 		client_message = ''
 		while True:
 			petition = connection.recv(1024)
 			if petition:
 				client_message += petition.decode('utf-8')
-				if petition.decode('utf-8') != '\r\n' or not petition.decode('utf-8').endswith('\r\n'):
+				client_message = client_message.replace('\r', '')
+				if not client_message.endswith('\n'):
 					continue
 				else:
-					client_message = client_message.replace("\r\n", "")
+					client_message = client_message.replace("\n", "")
 					client_message = client_message.split(" ")
 					function = switch(client_message[0])
 
@@ -64,9 +64,9 @@ def handle(connection):
 						break
 					
 					connection.send(server_message.encode('ascii'))
-     
+	 
 					client_message= ''
 					server_message= ''
-
+					
 if __name__ == "__main__":
 	main()

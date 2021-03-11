@@ -8,7 +8,7 @@ def receive():
 	while True:
 		try:
 			
-			respuesta = mi_socket.recv(4096).decode("ascii")
+			respuesta = mi_socket.recv(1024).decode("ascii")
 			if len(respuesta)!=0:   
 				if '/CHAT' in respuesta:
 					respuesta = respuesta.split(" ")
@@ -28,6 +28,7 @@ def write():
 	while True:
 		mensaje = str(input(': '))
 		mi_socket.send(mensaje.encode("ascii"))  
+		break
 
 def main():
 	receive_thread = threading.Thread(target=receive)
