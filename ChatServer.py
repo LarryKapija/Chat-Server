@@ -16,7 +16,16 @@ def switch(argument):
 		"/USERLIST": cmd.userlist,
 		"/CHAT": cmd.chat,
 		"/CLOSE": cmd.close,
-		"/CHATLIST": cmd.chatlist
+		"/CHATLIST": cmd.chatlist,
+		"/ROOM": cmd.room,
+		"/QUIT": cmd.quit, 
+		"/JOIN": cmd.join,
+		"/ADD": cmd.add,
+		"/REJECT": cmd.reject, 
+		"/REQUESTLIST": cmd.requestlist,
+		"/ROOMLIST": cmd.roomlist,
+		"/INVITELIST": cmd.invitelist,
+
 	}
 	func = switcher.get(argument, "Invalid command")
 	return func
