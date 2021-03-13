@@ -1,19 +1,23 @@
 # Chat-Server
 
-# Miguel
+## Miguel
+
 - ADD
 - ROOM
 
-# Amaury 
+## Amaury
+
 - User experience
 - CHAT, permitir enviar mensaje a grupo
 
-# Orlando
+## Orlando
+
 - JOIN
 - REQUESTLIST
 - ROOMLIST
 
-# Carlos
+## Carlos
+
 - QUIT
 - INVITELIST
 - REJECT
