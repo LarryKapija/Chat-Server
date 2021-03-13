@@ -1,7 +1,9 @@
 import stringcase as sc
+import Models
 
 users = {}
-
+groups = {}
+invitations = {}
 
 def id(username, connection):
 	username = str(''.join(username))
