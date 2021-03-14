@@ -72,3 +72,57 @@ def close(client,connection):
 	
 def chatlist():
 	return "CHATLIST"
+
+def join(args, connection):
+  try:
+    roomname = args[0]
+    position = list(users.values()).index(connection)
+    username = list(users.keys())[position]
+
+    if not roomname in groups.keys():
+      return "NotFound"
+    if username in groups[roomname].members:
+      return "Already"
+    if username in invitations:
+      if roomname in invitations[username]:
+        for member in groups[roomname].members:
+          message = username + " joined " + roomname
+          users[member].send(message.encode("ascii"))
+        groups[roomname].members.append(username)
+        groups[roomname].invitations.remove(username)
+        invitations[username].remove(roomname)
+    else:
+      if not username in groups[roomname].requests:
+        groups[roomname].requests.append(username)
+      owner = groups[roomname].owner
+      message = username + " request-to-join " + roomname
+      users[owner].send(message.encode("ascii"))
+
+    
+    return "Ok"
+  except Exception as e:
+    print(e)
+    return "Error"
+def requestlist(args, connection):
+  try:
+    roomname = args[0]
+    position = list(users.values()).index(connection)
+    username = list(users.keys())[position]
+
+    if not roomname in groups.keys():
+      return "NotFound"
+    if username != groups[roomname].owner:
+      return "NoOwner"
+    
+    return str(groups[roomname].requests)
+  except Exception as e:
+    print(e)
+    return "Error"
+
+def roomlist(client, connection):
+  try:
+    return str(list(groups.keys()))
+  except Exception as e:
+    print(e)
+    return "Error"
+  return "Ok"
