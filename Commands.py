@@ -87,7 +87,7 @@ def join(args, connection):
     if username in invitations:
       if roomname in invitations[username]:
         for member in groups[roomname].members:
-          message = username + " joined " + roomname
+          message = "/ROOMJOIN" + username + " joined " + roomname
           users[member].send(message.encode("ascii"))
         groups[roomname].members.append(username)
         groups[roomname].invitations.remove(username)
@@ -96,7 +96,7 @@ def join(args, connection):
       if not username in groups[roomname].requests:
         groups[roomname].requests.append(username)
       owner = groups[roomname].owner
-      message = username + " request-to-join " + roomname
+      message = "/ROOMJOIN" + username + " request-to-join " + roomname
       users[owner].send(message.encode("ascii"))
 
     
