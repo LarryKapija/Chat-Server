@@ -212,10 +212,54 @@ def add(args, connection):
 
 
 
-def quit():
-	return "null"
-def reject():
-	return "null"
+def quit(args, connection):
+	try:
+		roomname = args[0]
+		room = groups[roomname]
+		
+		user = getUser(connection)
+		if user not in room.members:
+			return "NotInRoom"
+		if room.owner == user:
+			message = f"/ROOMQUIT {user} deleted {roomname}"
+			
+			for user_invitations in invitations:
+				if roomname in user_invitations:
+					user_invitations.remove(roomname)
+			for member in room.members:
+				users[member].send(message)
+			groups.pop(roomname)
+			return "Ok"
 
-def invitelist():
-	return "null"
+		elif room.owner != user:
+			message = f"/ROOMQUIT {user} left {roomname}"
+			index = room.members.index(user)
+			room.members.pop(index)
+			for member in room.members:
+				users[member].send(message)
+	except Exception as e:
+		return "Error"
+
+
+def reject(args, connection):
+	try:
+		user = getUser(connection)
+		roomname = args[0]
+		room = groups[roomname]
+		invitations[user].remove(roomname)
+		room.invitations.remove(user)
+		owner = room.owner
+		message = f"/ROOMREJECT {user} reject"
+		users[owner].send(message.encode("ascii"))
+		return "Ok"
+	except Exception as e:
+		return "Error"
+
+def invitelist(connection):
+	try:
+		user = getUser(connection)
+		user_invitations = invitations[user]
+		print(user_invitations)
+		return str(user_invitations)
+	except Exception as e:
+		return "Error"
