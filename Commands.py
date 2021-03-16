@@ -177,8 +177,6 @@ def IsOwner(room_name, connection):
 
 def add(args, connection):
 	try:	
-		user = getUser(connection)
-		
 		if (args[0] == '-f'):
 			roomname = args[1]
 			newmemebers = args[2:]
@@ -204,6 +202,8 @@ def add(args, connection):
 					#TODO add memeber 
 					groups[roomname].members.append(member)
 					return "Ok"
+			else:
+				return "Error"
 
 		else:
 			roomname = args[0]
@@ -224,6 +224,8 @@ def add(args, connection):
 					if roomname not in invitations[member]:
 						invitations[member].append(roomname)
 						return "Ok"
+			else:
+				return "Error"
 
 	except Exception as e:
 		return f"Error{e}"
