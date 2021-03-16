@@ -6,8 +6,6 @@ import sys
 import threading
 
 
-
-
 def args(console_arguments):
 	x=0
 	port=5000

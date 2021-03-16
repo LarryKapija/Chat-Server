@@ -1,6 +1,6 @@
 import stringcase as sc
-from ChatServer import verbose_function
-from ChatServer import verbose
+#from ChatServer import verbose_function
+#from ChatServer import verbose
 import Models
 
 users = {}
@@ -11,20 +11,20 @@ def id(username, connection):
 	username = str(''.join(username))
 
 	if len(users) == 16:
-		verbose_function(f'\n{connection} tried to enter the chat, but it is already full\n',verbose)
+		#verbose_function(f'\n{connection} tried to enter the chat, but it is already full\n',verbose)
 		return "Full"
 
 	elif sc.pascalcase(username) != username:
-		verbose_function(f'\n{connection} tried to enter the chat, but the username "{username}" is not valid\n',verbose)
+		#verbose_function(f'\n{connection} tried to enter the chat, but the username "{username}" is not valid\n',verbose)
 		return "NotValid"
 
 	elif username in users:
-		verbose_function(f'\n{connection} tried to enter the chat, but the username "{username}" is already taked\n',verbose)
+		#verbose_function(f'\n{connection} tried to enter the chat, but the username "{username}" is already taked\n',verbose)
 		return "Taken"
 
 	else:
 		users[username] = connection
-		verbose_function(f'\n{connection} joined the conversation with the username "{username}\n',verbose)
+		#verbose_function(f'\n{connection} joined the conversation with the username "{username}\n',verbose)
 		invitations[username] = []
 		#broadcast(f"{username} joined the conversation!")
 		#connection.send()
@@ -55,19 +55,42 @@ def chat(args, connection):
 	username = args[1]
 	key_list = list(users.keys())
 	value_list = list(users.values())
+	
 	try:
-		if username in users:
-			position = value_list.index(connection)
-			message = str(' '.join(args)).replace(username, key_list[position])
-			message = "/CHAT " + message
-			users[username].send(message.encode("ascii"))
-			return "Ok"
+		if args[0] == '-u' :
+			username = args[1]
+	
+			if username in users:
+				position = value_list.index(connection)
+				message = str(' '.join(args)).replace(username, key_list[position])
+				message = "/CHAT " + message
+				users[username].send(message.encode("ascii"))
+				return "Ok"
+			else:
+				return "NotFound"
+		
+		elif args[0] == '-g':
+			roomname = args[1]
+
+			if roomname in groups.keys():
+				room = groups[roomname]
+				position = value_list.index(connection)
+	
+				message = str(' '.join(args)).replace(roomname, key_list[position])
+	
+				broadcast(message,room.members)
+				return "Ok"
+			else:
+				return 'NotFound'
 		else:
-			return "NotFound"
+			message = ' '.join(args)
+			broadcast(message)
+			return 'Ok'
+			
 
 	except Exception as e :
 		print(e)
-		return "Error"
+		return "Error" 
 
 
 def close(client,connection):
@@ -93,58 +116,66 @@ def chatlist():
 	return "CHATLIST"
 
 def join(args, connection):
-  try:
-    roomname = args[0]
-    position = list(users.values()).index(connection)
-    username = list(users.keys())[position]
+	try:
+		roomname = args[0]
+		position = list(users.values()).index(connection)
+		username = list(users.keys())[position]
 
-    if not roomname in groups.keys():
-      return "NotFound"
-    if username in groups[roomname].members:
-      return "Already"
-    if roomname in invitations[username]:
-      for member in groups[roomname].members:
-        message = "/ROOMJOIN " + username + " joined " + roomname
-        users[member].send(message.encode("ascii"))
-      groups[roomname].members.append(username)
-      groups[roomname].invitations.remove(username)
-      invitations[username].remove(roomname)
-    else:
-      if not username in groups[roomname].requests:
-        groups[roomname].requests.append(username)
-      owner = groups[roomname].owner
-      message = "/ROOMJOIN " + username + " request-to-join " + roomname
-      users[owner].send(message.encode("ascii"))
+		if not roomname in groups.keys():
+			return "NotFound"
+		
+		elif username in groups[roomname].members:
+			return "Already"
 
+		elif roomname in invitations[username]:
+      
+			for member in groups[roomname].members:
+				message = "/ROOMJOIN " + username + " joined " + roomname
+				users[member].send(message.encode("ascii"))
     
-    return "Ok"
-  except Exception as e:
-    print(e)
-    return "Error"
+				groups[roomname].members.append(username)
+				groups[roomname].invitations.remove(username)
+				invitations[username].remove(roomname)
+		else:
+			if not username in groups[roomname].requests:
+				groups[roomname].requests.append(username)
+				owner = groups[roomname].owner
+				message = "/ROOMJOIN " + username + " request-to-join " + roomname
+				users[owner].send(message.encode("ascii"))
+
+			return "Ok"
+
+	except Exception as e:
+		print(e)
+		return "Error"
 
 def requestlist(args, connection):
-  try:
-    roomname = args[0]
-    position = list(users.values()).index(connection)
-    username = list(users.keys())[position]
+	try:
+		roomname = args[0]
+		position = list(users.values()).index(connection)
+		username = list(users.keys())[position]
 
-    if not roomname in groups.keys():
-      return "NotFound"
-    if username != groups[roomname].owner:
-      return "NoOwner"
-    
-    return str(groups[roomname].requests)
-  except Exception as e:
-    print(e)
-    return "Error"
+		if not roomname in groups.keys():
+			return "NotFound"
+
+		elif username != groups[roomname].owner:
+			return "NoOwner"
+		
+		else:
+			return str(groups[roomname].requests)
+
+	except Exception as e:
+		print(e)
+		return "Error"
 
 def roomlist(client, connection):
-  try:
-    return str(list(groups.keys()))
-  except Exception as e:
-    print(e)
-    return "Error"
-  return "Ok"
+	try:
+		return str(list(groups.keys()))
+
+	except Exception as e:
+		print(e)
+		return "Error"
+	#return "Ok"
 
 def getUser(connection):
 	for key in users.keys():
@@ -157,12 +188,13 @@ def room(args,connection):
 		if roomname in groups:
 			return "Taken"
 		
-		owner =  getUser(connection)
+		owner =	getUser(connection)
 		groups[roomname] = Models.Groups(roomname,owner)
 		return 'Ok'
 
 	except Exception as e:
-		return f"Error{e}"
+		print(e)
+		return "Error"
 
 # def RoomExist(room_name):
 
@@ -170,6 +202,7 @@ def room(args,connection):
 def IsOwner(room_name, connection):
 	user = getUser(connection)
 	room = groups[room_name]
+ 
 	if (user == room.owner):
 		return True
 	else:
@@ -177,18 +210,16 @@ def IsOwner(room_name, connection):
 
 def add(args, connection):
 	try:	
-		user = getUser(connection)
+		#user = getUser(connection)
 		
 		if (args[0] == '-f'):
 			roomname = args[1]
-			newmemebers = args[2:]
+			newmembers = args[2:]
 
 			#TODO check grupo existe 
-			#
-
 			room = groups[roomname]
 			if (IsOwner(roomname, connection)):
-				for member in newmemebers:
+				for member in newmembers:
 					#TODO check existe usuario
 
 					#TODO eliminar requests
@@ -207,11 +238,11 @@ def add(args, connection):
 
 		else:
 			roomname = args[0]
-			newmemebers = args[1:]
+			newmembers = args[1:]
 			#TODO check grupo existe 
 			#
 			if (IsOwner(roomname, connection)):
-				for member in newmemebers:
+				for member in newmembers:
 					#TODO check existe ususario
 
 					#TODO eliminar request si hay y agregar al grupo
@@ -238,24 +269,29 @@ def quit(args, connection):
 		user = getUser(connection)
 		if user not in room.members:
 			return "NotInRoom"
+
 		if room.owner == user:
 			message = f"/ROOMQUIT {user} deleted {roomname}"
-			
+			broadcast(message, room.members)
+
 			for user_invitations in invitations:
 				if roomname in user_invitations:
 					user_invitations.remove(roomname)
+	 
 			for member in room.members:
 				users[member].send(message)
+	
 			groups.pop(roomname)
 			return "Ok"
 
 		elif room.owner != user:
 			message = f"/ROOMQUIT {user} left {roomname}"
+
 			index = room.members.index(user)
 			room.members.pop(index)
-			for member in room.members:
-				users[member].send(message)
-	except Exception as e:
+   
+			broadcast(message,room.members)
+	except :
 		return "Error"
 
 
@@ -270,14 +306,15 @@ def reject(args, connection):
 		message = f"/ROOMREJECT {user} reject"
 		users[owner].send(message.encode("ascii"))
 		return "Ok"
-	except Exception as e:
+	except :
 		return "Error"
 
 def invitelist(args,connection):
 	try:
 		user = getUser(connection)
 		user_invitations = invitations[user]
-		print(user_invitations)
+		#print(user_invitations)
 		return str(user_invitations)
-	except Exception as e:
+	except Exception as e :
+		print(e)
 		return "Error"
