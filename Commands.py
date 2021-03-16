@@ -1,6 +1,6 @@
 import stringcase as sc
-from ChatServer import verbose_function
-from ChatServer import verbose
+from Verbose import verbose_function
+from Verbose import verbose
 import Models
 
 users = {}
