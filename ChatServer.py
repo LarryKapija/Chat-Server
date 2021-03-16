@@ -33,7 +33,7 @@ def args(console_arguments):
 console_arguments = sys.argv
 port , verbose = args(console_arguments)
 
-print(f'{port} -> {verbose}')
+print(f'{port} ->{verbose}')
 
 def verbose_function(debug_message,bool_value):
 	if bool_value == True:
@@ -45,7 +45,7 @@ my_socket.bind(('localhost',port))
 my_socket.listen(16)
 	
 def switch(argument):
-	switcher = {
+	switcher = { 
 		"/ID": cmd.id,
 		"/USERLIST": cmd.userlist,
 		"/CHAT": cmd.chat,
