@@ -84,19 +84,18 @@ def join(args, connection):
       return "NotFound"
     if username in groups[roomname].members:
       return "Already"
-    if username in invitations:
-      if roomname in invitations[username]:
-        for member in groups[roomname].members:
-          message = "/ROOMJOIN" + username + " joined " + roomname
-          users[member].send(message.encode("ascii"))
-        groups[roomname].members.append(username)
-        groups[roomname].invitations.remove(username)
-        invitations[username].remove(roomname)
+    if roomname in invitations[username]:
+      for member in groups[roomname].members:
+        message = "/ROOMJOIN " + username + " joined " + roomname
+        users[member].send(message.encode("ascii"))
+      groups[roomname].members.append(username)
+      groups[roomname].invitations.remove(username)
+      invitations[username].remove(roomname)
     else:
       if not username in groups[roomname].requests:
         groups[roomname].requests.append(username)
       owner = groups[roomname].owner
-      message = "/ROOMJOIN" + username + " request-to-join " + roomname
+      message = "/ROOMJOIN " + username + " request-to-join " + roomname
       users[owner].send(message.encode("ascii"))
 
     
