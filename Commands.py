@@ -24,6 +24,7 @@ def id(username, connection):
 		#connection.send()
 		#print(users)
 		return "Ok"
+
 def broadcast(message):
 	for value in users:
 		users[value].send(message.encode("ascii"))
@@ -58,12 +59,18 @@ def chat(args, connection):
 		return "Error"
 
 
-
 def close(client,connection):
 	try:
-		for key in users.keys():
-			if users[key] == connection:
-				users.pop(key)
+		for userkey in users.keys():
+			if users[userkey] == connection:
+				
+				for room in groups.values():
+					if userkey in room.members:
+						quit(room.room_name,connection)
+
+				invitations.pop(userkey)
+				users.pop(userkey)
+
 				connection.send('Ok'.encode('ascii'))
 				connection.close()
 				break
@@ -103,6 +110,7 @@ def join(args, connection):
   except Exception as e:
     print(e)
     return "Error"
+
 def requestlist(args, connection):
   try:
     roomname = args[0]
@@ -254,7 +262,7 @@ def reject(args, connection):
 	except Exception as e:
 		return "Error"
 
-def invitelist(connection):
+def invitelist(args,connection):
 	try:
 		user = getUser(connection)
 		user_invitations = invitations[user]
