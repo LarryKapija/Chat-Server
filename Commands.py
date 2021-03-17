@@ -34,7 +34,7 @@ def id(username, connection):
 		return "Ok"
 
 def broadcast(message, userslist =''):
-	if len(userlist) == 0:
+	if userlist != '':
 		for value in users:
 			if value in userslist:
 				users[value].send(message.encode('ascii'))
@@ -54,7 +54,7 @@ def userlist(a=None, b=None):
 
 def chat(args, connection):
 
-	username = args[1]
+	#username = args[1]
 	key_list = list(users.keys())
 	value_list = list(users.values())
 	
@@ -78,15 +78,15 @@ def chat(args, connection):
 				room = groups[roomname]
 				position = value_list.index(connection)
 	
-				message = str(' '.join(args)).replace(roomname, key_list[position])
+				message = str(' '.join(args)).replace(key_list[position], f"{roomname}_{key_list[position]}")
 	
-				broadcast(message,room.members)
+				broadcast(message,list(room.members))
 				return "Ok"
 			else:
 				return 'NotFound'
 		else:
 			message = ' '.join(args)
-			broadcast(message)
+			broadcast(message,'')
 			return 'Ok'
 			
 

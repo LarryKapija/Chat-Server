@@ -5,7 +5,7 @@ import Commands as cmd
 import sys
 import threading
 
-<<<<<<< HEAD
+
 
 def args(console_arguments):
 	x=0
@@ -31,9 +31,9 @@ def args(console_arguments):
 
 console_arguments = sys.argv
 port , verbose = args(console_arguments)
-=======
+
 from Verbose import verbose, port, verbose_function
->>>>>>> 08fb3763fb2446981075435b18045acca6cf0af2
+
 
 print(f'{port} ->{verbose}')
 			
