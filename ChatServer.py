@@ -104,7 +104,7 @@ def handle(connection):
 					verbose_function(f'\nFunction that the server will use: {function}\n',verbose)
      
 					if isinstance(function, str):
-						connection.send(function.encode("ascii"))
+						connection.send(f'{function}\n'.encode("ascii"))
 						verbose_function(f'\nMessage : {function.encode("ascii")}\n',verbose)
 						continue
 
@@ -112,7 +112,7 @@ def handle(connection):
 					if connection._closed:
 						break
 					
-					connection.send(server_message.encode('ascii'))
+					connection.send(f'{server_message}\n'.encode('ascii'))
 					verbose_function(f'\nMessage to the client: {server_message}\n',verbose)
 	 
 					client_message= ''

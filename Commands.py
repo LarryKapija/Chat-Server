@@ -34,13 +34,13 @@ def id(username, connection):
 		return "Ok"
 
 def broadcast(message, userslist =''):
-	if userlist != '':
+	if userslist != '':
 		for value in users:
 			if value in userslist:
-				users[value].send(message.encode('ascii'))
+				users[value].send(f'{message}\n'.encode('ascii'))
 	else:
 		for value in users:
-			users[value].send(message.encode("ascii"))
+			users[value].send(f'{message}\n'.encode("ascii"))
 
 def userlist(a=None, b=None):
 	mylist = []
@@ -65,8 +65,8 @@ def chat(args, connection):
 			if username in users:
 				position = value_list.index(connection)
 				message = str(' '.join(args)).replace(username, key_list[position])
-				message = "/CHAT " + message
-				users[username].send(message.encode("ascii"))
+				message = "/MESSAGE " + message
+				users[username].send(f'{message}\n'.encode("ascii"))
 				return "Ok"
 			else:
 				return "NotFound"
@@ -78,7 +78,7 @@ def chat(args, connection):
 				room = groups[roomname]
 				position = value_list.index(connection)
 	
-				message = str(' '.join(args)).replace(key_list[position], f"{roomname}_{key_list[position]}")
+				message = "/MESSAGE " + str(' '.join(args)).replace(key_list[position], f"{roomname}_{key_list[position]}")
 	
 				broadcast(message,list(room.members))
 				return "Ok"
@@ -107,7 +107,7 @@ def close(client,connection):
 				invitations.pop(userkey)
 				users.pop(userkey)
 
-				connection.send('Ok'.encode('ascii'))
+				connection.send('Ok\n'.encode('ascii'))
 				connection.close()
 				break
 			
@@ -133,7 +133,7 @@ def join(args, connection):
       
 			for member in groups[roomname].members:
 				message = "/ROOMJOIN " + username + " joined " + roomname
-				users[member].send(message.encode("ascii"))
+				users[member].send(f'{message}\n'.encode("ascii"))
     
 				groups[roomname].members.append(username)
 				groups[roomname].invitations.remove(username)
@@ -143,7 +143,7 @@ def join(args, connection):
 				groups[roomname].requests.append(username)
 				owner = groups[roomname].owner
 				message = "/ROOMJOIN " + username + " request-to-join " + roomname
-				users[owner].send(message.encode("ascii"))
+				users[owner].send(f'{message}\n'.encode("ascii"))
 
 			return "Ok"
 
