@@ -135,9 +135,9 @@ def join(args, connection):
 				message = "/ROOMJOIN " + username + " joined " + roomname
 				users[member].send(f'{message}\n'.encode("ascii"))
     
-				groups[roomname].members.append(username)
-				groups[roomname].invitations.remove(username)
-				invitations[username].remove(roomname)
+			groups[roomname].members.append(username)
+			# groups[roomname].invitations.remove(username)
+			invitations[username].remove(roomname)
 		else:
 			if not username in groups[roomname].requests:
 				groups[roomname].requests.append(username)
