@@ -64,8 +64,8 @@ def chat(args, connection):
 	
 			if username in users:
 				position = value_list.index(connection)
-				message = str(' '.join(args)).replace(username, key_list[position])
-				message = "/MESSAGE " + message
+				message = str(' '.join(args)).replace(username, key_list[position]).replace("-u ", "").replace("-m ", "")
+				message = f'/MESSAGE {message}'
 				users[username].send(f'{message}\n'.encode("ascii"))
 				return "Ok"
 			else:
@@ -77,15 +77,16 @@ def chat(args, connection):
 			if roomname in groups.keys():
 				room = groups[roomname]
 				position = value_list.index(connection)
-	
-				message = "/MESSAGE " + str(' '.join(args)).replace(key_list[position], f"{roomname}_{key_list[position]}")
+				message = str(' '.join(args)).replace("-g ", "").replace("-m ", "")
+				message = "/MESSAGE " + message.replace(roomname, f"{roomname}_{key_list[position]}")
 	
 				broadcast(message,list(room.members))
 				return "Ok"
 			else:
 				return 'NotFound'
 		else:
-			message = ' '.join(args)
+			position = value_list.index(connection)
+			message = "/MESSAGE " + f'{key_list[position]} ' + ' '.join(args).replace("-m ", "")
 			broadcast(message,'')
 			return 'Ok'
 			
