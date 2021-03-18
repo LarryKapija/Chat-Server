@@ -324,7 +324,6 @@ def reject(args, connection):
 		roomname = args[0]
 		room = groups[roomname]
 		invitations[user].remove(roomname)
-		room.invitations.remove(user)
 		owner = room.owner
 		message = f"/ROOMREJECT {user} reject"
 		users[owner].send(message.encode("ascii"))
