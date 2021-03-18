@@ -234,7 +234,8 @@ def add(args, connection):
 							invitations[member].remove(roomname)
 
 					#TODO add memeber
-					connection.send('/ADDED ' + roomname.encode('ascii'))
+					msg = '/ADDED ' + roomname
+					connection.send(msg.encode('ascii'))
 					groups[roomname].members.append(member)
 
 					return "Ok"
@@ -258,7 +259,8 @@ def add(args, connection):
 
 					#TODO enviar invitacion si no tiene
 					if roomname not in invitations[member]:
-						connection.send('/INVITED ' + roomname.encode('ascii'))
+						mdg = '/INVITED ' + roomname
+						connection.send(msg.encode('ascii'))
 						invitations[member].append(roomname)
 						return "Ok"
 			else:
