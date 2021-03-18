@@ -202,14 +202,14 @@ def room(args,connection):
 # def RoomExist(room_name):
 
 
-def IsOwner(room_name, connection):
+def IsNotOwner(room_name, connection):
 	user = getUser(connection)
 	room = groups[room_name]
  
 	if (user == room.owner):
-		return True
-	else:
 		return False
+	else:
+		return True
 
 def add(args, connection):
 	try:	
@@ -217,54 +217,66 @@ def add(args, connection):
 			roomname = args[1]
 			newmembers = args[2:]
 
-			#TODO check grupo existe 
+			#TODO check grupo existe
+			if(roomname not in groups):
+				return "NotFound"
+
 			room = groups[roomname]
-			if (IsOwner(roomname, connection)):
-				for member in newmembers:
-					#TODO check existe usuario
-
-					#TODO eliminar requests
-					for req in room.requests:
-						if member == req:
-							room.requests.remove(member)
-
-					#TODO eliminar invitaciones
-					for group in invitations[member]:
-						if roomname == group :
-							invitations[member].remove(roomname)
-
-					#TODO add memeber
-					msg = '/ADDED ' + roomname
-					connection.send(msg.encode('ascii'))
-					groups[roomname].members.append(member)
-
-					return "Ok"
-			else:
+			if (IsNotOwner(roomname, connection)):
 				return "Error"
+
+			for member in newmembers:
+				#TODO check existe usuario
+				if member not in users:
+					return "NotFound"
+
+				#TODO eliminar requests
+				for req in room.requests:
+					if member == req:
+						room.requests.remove(member)
+
+				#TODO eliminar invitaciones
+				for group in invitations[member]:
+					if roomname == group :
+						invitations[member].remove(roomname)
+
+				#TODO add memeber
+				msg = '/ADDED ' + roomname
+				users[member].send(msg.encode('ascii'))
+				groups[roomname].members.append(member)
+				return "Ok"
+
 
 		else:
 			roomname = args[0]
 			newmembers = args[1:]
 			#TODO check grupo existe 
-			#
-			if (IsOwner(roomname, connection)):
-				for member in newmembers:
-					#TODO check existe ususario
+			if roomname not in groups :
+				return "NotFound"
 
-					#TODO eliminar request si hay y agregar al grupo
-					if member in groups[roomname].requests:
-						groups[roomname].requests.remove(member)
-						groups[roomname].members.append(member)
-						return "Ok"
-
-					#TODO enviar invitacion si no tiene
-					if roomname not in invitations[member]:
-						mdg = '/INVITED ' + roomname
-						connection.send(msg.encode('ascii'))
-						invitations[member].append(roomname)
-						return "Ok"
-			else:
+			#TODO check es owner
+			if IsNotOwner(roomname, connection):
 				return "Error"
+
+			for member in newmembers:
+
+				#TODO check existe ususario
+				if(member not in users):
+					return "NotFound"
+
+				#TODO eliminar request si hay y agregar al grupo
+				if member in groups[roomname].requests:
+					groups[roomname].requests.remove(member)
+					groups[roomname].members.append(member)
+					return "Ok"
+
+				#TODO enviar invitacion si no tiene
+				if roomname not in invitations[member]:
+					mdg = '/INVITED ' + roomname
+					users[member].send(msg.encode('ascii'))
+					invitations[member].append(roomname)
+					return "Ok"
+
 
 	except Exception as e:
 		return f"Error{e}"
