@@ -224,16 +224,16 @@ def add(args, connection):
 
 			#TODO check grupo existe
 			if(roomname not in groups):
-				return "NotFound"
+				return "RoomNotFound"
 
 			room = groups[roomname]
 			if (IsNotOwner(roomname, connection)):
-				return "Error"
+				return "NoOwner"
 
 			for member in newmembers:
 				#TODO check existe usuario
 				if member not in users:
-					return "NotFound"
+					return "UserNotFound"
 
 				#TODO eliminar requests
 				for req in room.requests:
@@ -251,23 +251,22 @@ def add(args, connection):
 				groups[roomname].members.append(member)
 				return "Ok"
 
-
 		else:
 			roomname = args[0]
 			newmembers = args[1:]
 			#TODO check grupo existe 
 			if roomname not in groups :
-				return "NotFound"
+				return "RoomNotFound"
 
 			#TODO check es owner
 			if IsNotOwner(roomname, connection):
-				return "Error"
+				return "NoOwner"
 
 			for member in newmembers:
 
 				#TODO check existe ususario
 				if(member not in users):
-					return "NotFound"
+					return "UserNotFound"
 
 				#TODO eliminar request si hay y agregar al grupo
 				if member in groups[roomname].requests:
@@ -281,7 +280,6 @@ def add(args, connection):
 					users[member].send(msg.encode('ascii'))
 					invitations[member].append(roomname)
 					return "Ok"
-
 
 	except Exception as e:
 		return f"Error{e}"
