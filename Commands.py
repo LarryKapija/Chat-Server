@@ -223,7 +223,7 @@ def add(args, connection):
 
 			room = groups[roomname]
 			if (IsNotOwner(roomname, connection)):
-				return "Error"
+				return "NoOwner"
 
 			for member in newmembers:
 				#TODO check existe usuario
@@ -246,7 +246,6 @@ def add(args, connection):
 				groups[roomname].members.append(member)
 				return "Ok"
 
-
 		else:
 			roomname = args[0]
 			newmembers = args[1:]
@@ -256,7 +255,7 @@ def add(args, connection):
 
 			#TODO check es owner
 			if IsNotOwner(roomname, connection):
-				return "Error"
+				return "NoOwner"
 
 			for member in newmembers:
 
@@ -276,7 +275,6 @@ def add(args, connection):
 					users[member].send(msg.encode('ascii'))
 					invitations[member].append(roomname)
 					return "Ok"
-
 
 	except Exception as e:
 		return f"Error{e}"
