@@ -6,12 +6,11 @@ import sys
 import threading
 
 
-
 def args(console_arguments):
 	x=0
 	port=5000
 	verbose = False
-	
+
 	for argument in console_arguments:
 		try:
 			if argument == '-p' or argument == '--port':
@@ -23,10 +22,10 @@ def args(console_arguments):
 				port=5000
 				verbose = False
 		x+=1
-  
+
 	if port < 0 or port > 65535 :
 		port = 5000
-  	
+
 	return port,verbose
 
 console_arguments = sys.argv
@@ -34,14 +33,13 @@ port , verbose = args(console_arguments)
 
 from Verbose import verbose, port, verbose_function
 
+print(f'{port} -> {verbose}')
 
-print(f'{port} ->{verbose}')
-			
 log.basicConfig(filename='server.log',level=log.DEBUG,filemode='a')
 my_socket = sk.socket()
 my_socket.bind(('localhost',port))
 my_socket.listen(16)
-	
+
 def switch(argument):
 	switcher = { 
 		"/ID": cmd.id,
@@ -57,7 +55,6 @@ def switch(argument):
 		"/REQUESTLIST": cmd.requestlist,
 		"/ROOMLIST": cmd.roomlist,
 		"/INVITELIST": cmd.invitelist,
-
 	}
 	func = switcher.get(argument, "Invalid command")
 	return func
@@ -85,16 +82,21 @@ def main():
 def handle(connection):
 	with connection:
 		client_message = ''
-  
+
 		while True:
 			petition = connection.recv(1024)
 			verbose_function(f'\nNew client petition {petition}\n',verbose)
-   
+
 			if petition:
+
 				client_message += petition.decode('utf-8')
-				client_message = client_message.replace('\r', '')
+
+				try:
+					client_message = client_message.replace('\r', '')
+				except:
+					print('',end='')
 				verbose_function(f'\nClient message decode {client_message}\n',verbose)
-    
+
 				if not client_message.endswith('\n'):
 					continue
 				else:
@@ -102,7 +104,7 @@ def handle(connection):
 					client_message = client_message.split(" ")
 					function = switch(client_message[0])
 					verbose_function(f'\nFunction that the server will use: {function}\n',verbose)
-     
+
 					if isinstance(function, str):
 						connection.send(f'{function}\n'.encode("ascii"))
 						verbose_function(f'\nMessage : {function.encode("ascii")}\n',verbose)
@@ -114,7 +116,7 @@ def handle(connection):
 					
 					connection.send(f'{server_message}\n'.encode('ascii'))
 					verbose_function(f'\nMessage to the client: {server_message}\n',verbose)
-	 
+
 					client_message= ''
 					server_message= ''
 					

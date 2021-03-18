@@ -33,13 +33,15 @@ def id(username, connection):
 		#print(users)
 		return "Ok"
 
-def broadcast(message, userslist =''):
+def broadcast(message, sender,userslist =''):
 	if userslist != '':
 		for value in users:
 			if value in userslist:
+				if value == sender: continue
 				users[value].send(f'{message}\n'.encode('ascii'))
 	else:
 		for value in users:
+			if value == sender: continue
 			users[value].send(f'{message}\n'.encode("ascii"))
 
 def userlist(a=None, b=None):
@@ -57,11 +59,12 @@ def chat(args, connection):
 	#username = args[1]
 	key_list = list(users.keys())
 	value_list = list(users.values())
-	
+	#sender = users[connection]
+
 	try:
 		if args[0] == '-u' :
 			username = args[1]
-	
+
 			if username in users:
 				position = value_list.index(connection)
 				message = str(' '.join(args)).replace(username, key_list[position]).replace("-u ", "").replace("-m ", "")
@@ -70,24 +73,26 @@ def chat(args, connection):
 				return "Ok"
 			else:
 				return "NotFound"
-		
+
 		elif args[0] == '-g':
 			roomname = args[1]
 
 			if roomname in groups.keys():
 				room = groups[roomname]
 				position = value_list.index(connection)
+				sender = key_list[position]
 				message = str(' '.join(args)).replace("-g ", "").replace("-m ", "")
-				message = "/MESSAGE " + message.replace(roomname, f"{roomname}_{key_list[position]}")
-	
-				broadcast(message,list(room.members))
+				message = "/MESSAGE " + message.replace(roomname, f"{roomname}_{sender}")
+
+				broadcast(message,sender,list(room.members))
 				return "Ok"
 			else:
 				return 'NotFound'
 		else:
 			position = value_list.index(connection)
-			message = "/MESSAGE " + f'{key_list[position]} ' + ' '.join(args).replace("-m ", "")
-			broadcast(message,'')
+			sender = key_list[position]
+			message = "/MESSAGE " + f'{sender} ' + ' '.join(args).replace("-m ", "")
+			broadcast(message,sender,'')
 			return 'Ok'
 			
 
@@ -114,7 +119,7 @@ def close(client,connection):
 			
 	except Exception as e:
 		return f"Error{e}"
-	
+
 def chatlist():
 	return "CHATLIST"
 
@@ -131,11 +136,11 @@ def join(args, connection):
 			return "Already"
 
 		elif roomname in invitations[username]:
-      
+
 			for member in groups[roomname].members:
 				message = "/ROOMJOIN " + username + " joined " + roomname
 				users[member].send(f'{message}\n'.encode("ascii"))
-    
+
 			groups[roomname].members.append(username)
 			# groups[roomname].invitations.remove(username)
 			invitations[username].remove(roomname)
@@ -190,7 +195,7 @@ def room(args,connection):
 		roomname = args[0]
 		if roomname in groups:
 			return "Taken"
-		
+
 		owner =	getUser(connection)
 		groups[roomname] = Models.Groups(roomname,owner)
 		return 'Ok'
@@ -205,7 +210,7 @@ def room(args,connection):
 def IsNotOwner(room_name, connection):
 	user = getUser(connection)
 	room = groups[room_name]
- 
+
 	if (user == room.owner):
 		return False
 	else:
@@ -272,7 +277,7 @@ def add(args, connection):
 
 				#TODO enviar invitacion si no tiene
 				if roomname not in invitations[member]:
-					mdg = '/INVITED ' + roomname
+					msg = '/INVITED ' + roomname
 					users[member].send(msg.encode('ascii'))
 					invitations[member].append(roomname)
 					return "Ok"
@@ -282,12 +287,11 @@ def add(args, connection):
 		return f"Error{e}"
 
 
-
 def quit(args, connection):
 	try:
 		roomname = args[0]
 		room = groups[roomname]
-		
+
 		user = getUser(connection)
 		if user not in room.members:
 			return "NotInRoom"
@@ -299,10 +303,10 @@ def quit(args, connection):
 			for user_invitations in invitations:
 				if roomname in user_invitations:
 					user_invitations.remove(roomname)
-	 
+
 			for member in room.members:
 				users[member].send(message)
-	
+
 			groups.pop(roomname)
 			return "Ok"
 
@@ -311,11 +315,10 @@ def quit(args, connection):
 
 			index = room.members.index(user)
 			room.members.pop(index)
-   
+
 			broadcast(message,room.members)
 	except :
 		return "Error"
-
 
 def reject(args, connection):
 	try:
