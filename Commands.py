@@ -302,8 +302,8 @@ def quit(args, connection):
 				if roomname in user_invitations:
 					user_invitations.remove(roomname)
 
-			for member in room.members:
-				users[member].send(message)
+			# for member in room.members:
+			# 	users[member].send(message)
 
 			groups.pop(roomname)
 			return "Ok"
